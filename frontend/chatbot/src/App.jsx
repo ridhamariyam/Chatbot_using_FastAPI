@@ -16,7 +16,7 @@ const App = () => {
 
   useEffect(() => {
     if (!conversationId) {
-      setConversationId(Date.now().toString());
+      setConversationId(() => Date.now().toString());
     }
   }, [conversationId]);
 
@@ -32,7 +32,7 @@ const App = () => {
     ]);
 
     try {
-      const response = await fetch(`http://localhost:8000/chat/`, {
+      const response = await fetch(`https://chatbot-using-fastapi-2.onrender.com/chat/`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -44,7 +44,7 @@ const App = () => {
       });
 
       if (!response.ok) {
-        throw new Error('Error with API request');
+        throw new Error(`Error with API request: ${response.status} ${response.statusText}`);
       }
 
       const data = await response.json();
@@ -57,7 +57,7 @@ const App = () => {
       console.error('Error:', error);
       setChatHistory((prevHistory) => [
         ...prevHistory,
-        { sender: 'ai', text: 'Sorry, there was an error. Please try again.' },
+        { sender: 'ai', text: `Sorry, there was an error: ${error.message}` },
       ]);
     } finally {
       setLoading(false);
